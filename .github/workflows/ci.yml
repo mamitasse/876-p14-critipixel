@@ -17,26 +17,32 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h localhost -proot"
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=10
+
+    env:
+      APP_ENV: test
+      DATABASE_URL: mysql://root:root@127.0.0.1:3306/critipixel_test?serverVersion=8.0.32&charset=utf8mb4
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
-          extensions: pdo_mysql
+          extensions: pdo_mysql, intl
+          coverage: none
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
       - name: Prepare database
         run: |
+          php bin/console doctrine:database:drop --force --if-exists --env=test
           php bin/console doctrine:database:create --env=test
           php bin/console doctrine:schema:update --force --env=test
           php bin/console doctrine:fixtures:load -n --env=test
