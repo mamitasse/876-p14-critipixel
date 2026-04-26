@@ -1,0 +1,34 @@
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+
+parameters:
+    level: 5
+
+    paths:
+        - src
+
+    excludePaths:
+        - var
+        - vendor
+        - tests
+        - src/Doctrine/DataFixtures
+
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
+
+    ignoreErrors:
+        -
+            identifier: property.unusedType
+        -
+            identifier: property.onlyRead
+        -
+            identifier: property.onlyWritten
+        -
+            identifier: method.childReturnType
+            path: src/List/VideoGameList/Pagination.php
+        -
+            identifier: return.type
+            path: src/List/VideoGameList/Pagination.php
+        -
+            identifier: argument.type
+            path: src/List/VideoGameList/VideoGamesList.php
