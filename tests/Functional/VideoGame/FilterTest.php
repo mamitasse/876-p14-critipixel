@@ -42,7 +42,7 @@ final class FilterTest extends FunctionalTestCase
         self::assertResponseIsSuccessful();
 
         $this->client->submitForm('Filtrer', [
-            'filter[tags]' => [1],
+            'filter[tags]' => [13],
         ], 'GET');
 
         self::assertResponseIsSuccessful();

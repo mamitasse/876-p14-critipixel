@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use App\Model\Entity\User;
 
 #[Route('/', name: 'video_games_')]
 final class VideoGameController extends AbstractController
@@ -43,13 +42,7 @@ final class VideoGameController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->denyAccessUnlessGranted('review', $videoGame);
             $review->setVideoGame($videoGame);
-           $user = $this->getUser();
-
-if (!$user instanceof User) {
-    throw $this->createAccessDeniedException();
-}
-
-$review->setUser($user);
+            $review->setUser($this->getUser());
             $entityManager->persist($review);
             $entityManager->flush();
             return $this->redirectToRoute('video_games_show', ['slug' => $videoGame->getSlug()]);
