@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Model\Entity;
 
 use App\Doctrine\EntityListener\UserListener;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\EntityListeners;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -52,6 +55,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[PasswordStrength]
     private ?string $plainPassword = null;
 
+    /**
+     * @var Collection<int, Review>
+     */
+    #[OneToMany(targetEntity: Review::class, mappedBy: 'user')]
+    private Collection $reviews;
+
+    public function __construct()
+    {
+        $this->reviews = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -65,6 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUsername(string $username): User
     {
         $this->username = $username;
+
         return $this;
     }
 
@@ -76,7 +91,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): User
     {
         $this->email = $email;
+
         return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRoles(): array
+    {
+        return ['ROLE_USER'];
     }
 
     public function getPassword(): string
@@ -87,6 +111,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): User
     {
         $this->password = $password;
+
         return $this;
     }
 
@@ -98,12 +123,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPlainPassword(?string $plainPassword): User
     {
         $this->plainPassword = $plainPassword;
-        return $this;
-    }
 
-    public function getRoles(): array
-    {
-        return ['ROLE_USER'];
+        return $this;
     }
 
     public function eraseCredentials(): void
@@ -114,5 +135,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return $this->email;
+    }
+
+    /**
+     * @return Collection<int, Review>
+     */
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
     }
 }
